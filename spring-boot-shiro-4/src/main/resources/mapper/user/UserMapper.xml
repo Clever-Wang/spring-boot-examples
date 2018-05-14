@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.springboot.test.shiro.modules.user.dao.UserMapper">
+
+	<!-- 查询用户信息 -->
+	<select id="findByUserName" resultType="com.springboot.test.shiro.modules.user.dao.entity.User">
+		SELECT * FROM user_info WHERE username = #{userName}
+	</select>
+
+	<!-- 添加用户 -->
+	<!-- 创建用户 -->
+	<insert id="insert" parameterType="com.springboot.test.shiro.modules.user.dao.entity.User">
+		<selectKey resultType="java.lang.Integer" keyProperty="uid" order="AFTER">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		insert into user_info
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="uid != null" >
+				uid,
+			</if>
+			<if test="username != null and username != ''" >
+				username,
+			</if>
+			<if test="password != null and password != ''" >
+				password,
+			</if>
+			<if test="name != null and name != ''" >
+				`name`,
+			</if>
+			<if test="id_card_num != null and id_card_num != ''" >
+				id_card_num,
+			</if>
+			<if test="state != null and state != ''" >
+				state,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="uid != null" >
+				#{uid},
+			</if>
+			<if test="username != null and username != ''" >
+				#{username},
+			</if>
+			<if test="password != null and password != ''" >
+				#{password},
+			</if>
+			<if test="name != null and name != ''" >
+				#{name},
+			</if>
+			<if test="id_card_num != null and id_card_num != ''" >
+				#{id_card_num},
+			</if>
+			<if test="state != null and state != ''" >
+				#{state},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 删除用户 -->
+	<delete id="del">
+		DELETE FROM user_info WHERE username = #{username}
+	</delete>
+	
+</mapper> 
