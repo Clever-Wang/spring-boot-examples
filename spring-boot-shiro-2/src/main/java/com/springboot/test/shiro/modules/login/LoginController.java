@@ -18,8 +18,24 @@ import javax.servlet.http.HttpSession;
  * @description:
  */
 @Controller
-@RequestMapping("/user")
 public class LoginController {
+
+    /**
+     * 访问项目根路径
+     * @return
+     */
+    @RequestMapping(value = "/",method = RequestMethod.GET)
+    public String root(Model model) {
+        Subject subject = SecurityUtils.getSubject();
+        User user=(User) subject.getPrincipal();
+        if (user == null){
+            return "redirect:/login";
+        }else{
+            return "redirect:/index";
+        }
+
+    }
+
 
     /**
      * 跳转到login页面
@@ -85,7 +101,7 @@ public class LoginController {
     }
 
     /**
-     * 登出
+     * 登出  这个方法没用到,用的是shiro默认的logout
      * @param session
      * @param model
      * @return
@@ -96,6 +112,17 @@ public class LoginController {
         subject.logout();
         model.addAttribute("msg","安全退出！");
         return "login";
+    }
+
+    /**
+     * 跳转到无权限页面
+     * @param session
+     * @param model
+     * @return
+     */
+    @RequestMapping("/unauthorized")
+    public String unauthorized(HttpSession session, Model model) {
+        return "unauthorized";
     }
 
 

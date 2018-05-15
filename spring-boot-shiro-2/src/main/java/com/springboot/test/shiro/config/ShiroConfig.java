@@ -47,7 +47,7 @@ public class ShiroConfig {
         //必须设置 SecurityManager,Shiro的核心安全接口
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         //这里的/login是后台的接口名,非页面，如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面
-        shiroFilterFactoryBean.setLoginUrl("/user/login");
+        shiroFilterFactoryBean.setLoginUrl("/login");
         //这里的/index是后台的接口名,非页面,登录成功后要跳转的链接
         shiroFilterFactoryBean.setSuccessUrl("/index");
         //未授权界面,该配置无效，并不会进行页面跳转
@@ -63,19 +63,16 @@ public class ShiroConfig {
         // 过滤链定义，从上向下顺序执行，一般将 /**放在最为下边 --> : 这是一个坑，一不小心代码就不好使了
         LinkedHashMap<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         //配置不登录可以访问的资源，anon 表示资源都可以匿名访问
-        filterChainDefinitionMap.put("/user/login", "anon");
-        filterChainDefinitionMap.put("/403", "anon");
+        filterChainDefinitionMap.put("/login", "anon");
+        filterChainDefinitionMap.put("/", "anon");
         filterChainDefinitionMap.put("/css/**", "anon");
         filterChainDefinitionMap.put("/js/**", "anon");
-        filterChainDefinitionMap.put("/fonts/**", "anon");
         filterChainDefinitionMap.put("/img/**", "anon");
         filterChainDefinitionMap.put("/druid/**", "anon");
-        filterChainDefinitionMap.put("/user/regist", "anon");
-        filterChainDefinitionMap.put("/gifCode", "anon");
         //logout是shiro提供的过滤器
         filterChainDefinitionMap.put("/logout", "logout");
         //此时访问/user/delete需要delete权限,在自定义Realm中为用户授权。
-        filterChainDefinitionMap.put("/user/delete", "perms[\"user:delete\"]");
+        //filterChainDefinitionMap.put("/user/delete", "perms[\"user:delete\"]");
 
         //其他资源都需要认证  authc 表示需要认证才能进行访问
         filterChainDefinitionMap.put("/**", "authc");
