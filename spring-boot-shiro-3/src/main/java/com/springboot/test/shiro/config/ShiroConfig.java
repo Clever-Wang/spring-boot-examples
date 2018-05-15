@@ -49,7 +49,7 @@ public class ShiroConfig {
         //必须设置 SecurityManager,Shiro的核心安全接口
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         //这里的/login是后台的接口名,非页面，如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面
-        shiroFilterFactoryBean.setLoginUrl("/user/login");
+        shiroFilterFactoryBean.setLoginUrl("/login");
         //这里的/index是后台的接口名,非页面,登录成功后要跳转的链接
         shiroFilterFactoryBean.setSuccessUrl("/index");
         //未授权界面,该配置无效，并不会进行页面跳转
@@ -66,19 +66,16 @@ public class ShiroConfig {
         LinkedHashMap<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         //配置不登录可以访问的资源，anon 表示资源都可以匿名访问
         //配置记住我或认证通过可以访问的地址
-        filterChainDefinitionMap.put("/user/login", "anon");
-        filterChainDefinitionMap.put("/403", "anon");
+        filterChainDefinitionMap.put("/login", "anon");
+        filterChainDefinitionMap.put("/", "anon");
         filterChainDefinitionMap.put("/css/**", "anon");
         filterChainDefinitionMap.put("/js/**", "anon");
-        filterChainDefinitionMap.put("/fonts/**", "anon");
         filterChainDefinitionMap.put("/img/**", "anon");
         filterChainDefinitionMap.put("/druid/**", "anon");
-        filterChainDefinitionMap.put("/user/regist", "anon");
-        filterChainDefinitionMap.put("/gifCode", "anon");
         //logout是shiro提供的过滤器
         filterChainDefinitionMap.put("/logout", "logout");
         //此时访问/user/delete需要delete权限,在自定义Realm中为用户授权。
-        filterChainDefinitionMap.put("/user/delete", "perms[\"user:delete\"]");
+        //filterChainDefinitionMap.put("/user/delete", "perms[\"user:delete\"]");
 
         //其他资源都需要认证  authc 表示需要认证才能进行访问 user表示配置记住我或认证通过可以访问的地址
         filterChainDefinitionMap.put("/**", "user");
@@ -196,7 +193,7 @@ public class ShiroConfig {
      * cookie对象;会话Cookie模板 ,默认为: JSESSIONID 问题: 与SERVLET容器名冲突,重新定义为sid或rememberMe，自定义
      * @return
      */
-    @Bean
+    @Bean("rememberMeCookie")
     public SimpleCookie rememberMeCookie(){
         //这个参数是cookie的名称，对应前端的checkbox的name = rememberMe
         SimpleCookie simpleCookie = new SimpleCookie("rememberMe");
