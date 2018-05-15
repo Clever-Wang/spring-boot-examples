@@ -9,7 +9,7 @@
 <body>
 <h1>欢迎登录</h1>
 <h1 th:if="${msg != null }" th:text="${msg}" style="color: red"></h1>
-<form action="/user/login" method="post">
+<form action="/login" method="post">
     用户名：<input type="text" name="username"/><br/>
     密码：<input type="password" name="password"/><br/>
     <input type="checkbox" name="rememberMe" />记住我<br/>
