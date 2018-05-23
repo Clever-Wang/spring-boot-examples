@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8" />
+    <title>Insert title here</title>
+</head>
+<body>
+<h1>欢迎登录</h1>
+<h1 th:if="${msg != null }" th:text="${msg}" style="color: red"></h1>
+<form action="/login" method="post">
+    用户名：<input type="text" name="username"/><br/>
+    密码：<input type="password" name="password"/><br/>
+    <input type="checkbox" name="rememberMe" />记住我<br/>
+    <input type="submit" value="提交"/>
+</form>
+</body>
+</html>
