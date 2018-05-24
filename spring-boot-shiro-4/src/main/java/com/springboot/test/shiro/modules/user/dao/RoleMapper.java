@@ -20,4 +20,20 @@ public interface RoleMapper {
      * @return
      */
     Set<Role> findRolesByUserId(@Param("uid") Integer uid);
+
+    /**
+     * 给admin用户添加 userInfo:del 权限
+     * @param roleId
+     * @param permissionId
+     * @return
+     */
+    int addPermission(@Param("roleId") int roleId,@Param("permissionId") int permissionId);
+
+    /**
+     * 删除admin用户 userInfo:del 权限
+     * @param roleId
+     * @param permissionId
+     * @return
+     */
+    int delPermission(@Param("roleId") int roleId,@Param("permissionId") int permissionId);
 }

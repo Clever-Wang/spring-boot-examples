@@ -46,19 +46,28 @@
     <defaultCache
             maxElementsInMemory="10000"
             eternal="false"
-            timeToIdleSeconds="120"
-            timeToLiveSeconds="120"
+            timeToIdleSeconds="0"
+            timeToLiveSeconds="0"
             overflowToDisk="false"
             diskPersistent="false"
             diskExpiryThreadIntervalSeconds="120"
     />
 
-
-    <!-- 登录记录缓存锁定10分钟 -->
-    <cache name="passwordRetryCache"
+    <!-- 授权缓存 -->
+    <cache name="authorizationCache"
            maxEntriesLocalHeap="2000"
            eternal="false"
-           timeToIdleSeconds="3600"
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
+
+    <!-- 认证缓存 -->
+    <cache name="authenticationCache"
+           maxEntriesLocalHeap="2000"
+           eternal="false"
+           timeToIdleSeconds="0"
            timeToLiveSeconds="0"
            overflowToDisk="false"
            statistics="true">

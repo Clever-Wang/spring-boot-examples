@@ -14,6 +14,7 @@ import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.web.servlet.ErrorPage;
@@ -88,14 +89,13 @@ public class ShiroConfig {
 
     /**
      * 配置核心安全事务管理器
-     * @param shiroRealm
      * @return
      */
     @Bean(name="securityManager")
-    public SecurityManager securityManager(@Qualifier("shiroRealm") ShiroRealm shiroRealm) {
+    public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager =  new DefaultWebSecurityManager();
         //设置自定义realm.
-        securityManager.setRealm(shiroRealm);
+        securityManager.setRealm(shiroRealm());
         //配置记住我 参考博客：
         securityManager.setRememberMeManager(rememberMeManager());
 
@@ -124,6 +124,15 @@ public class ShiroConfig {
     @Bean
     public ShiroRealm shiroRealm(){
         ShiroRealm shiroRealm = new ShiroRealm();
+        shiroRealm.setCachingEnabled(true);
+        //启用身份验证缓存，即缓存AuthenticationInfo信息，默认false
+        shiroRealm.setAuthenticationCachingEnabled(true);
+        //缓存AuthenticationInfo信息的缓存名称 在ehcache-shiro.xml中有对应缓存的配置
+        shiroRealm.setAuthenticationCacheName("authenticationCache");
+        //启用授权缓存，即缓存AuthorizationInfo信息，默认false
+        shiroRealm.setAuthorizationCachingEnabled(true);
+        //缓存AuthorizationInfo信息的缓存名称  在ehcache-shiro.xml中有对应缓存的配置
+        shiroRealm.setAuthorizationCacheName("authorizationCache");
         return shiroRealm;
     }
 
@@ -245,6 +254,19 @@ public class ShiroConfig {
         EhCacheManager cacheManager = new EhCacheManager();
         cacheManager.setCacheManagerConfigFile("classpath:config/ehcache-shiro.xml");
         return cacheManager;
+    }
+
+    /**
+     * 让某个实例的某个方法的返回值注入为Bean的实例
+     * Spring静态注入
+     * @return
+     */
+    @Bean
+    public MethodInvokingFactoryBean getMethodInvokingFactoryBean(){
+        MethodInvokingFactoryBean factoryBean = new MethodInvokingFactoryBean();
+        factoryBean.setStaticMethod("org.apache.shiro.SecurityUtils.setSecurityManager");
+        factoryBean.setArguments(new Object[]{securityManager()});
+        return factoryBean;
     }
 
 
