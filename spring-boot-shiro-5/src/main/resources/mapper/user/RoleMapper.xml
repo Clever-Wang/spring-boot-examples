@@ -6,5 +6,15 @@
 	<select id="findRolesByUserId" resultType="com.springboot.test.shiro.modules.user.dao.entity.Role">
 		SELECT r.* from sys_role r LEFT JOIN sys_user_role ur on r.id = ur.role_id where ur.uid  = #{uid}
 	</select>
-	
+
+	<!-- 给admin用户添加 userInfo:del 权限 -->
+	<insert id="addPermission">
+		INSERT INTO sys_role_permission(role_id,permission_id) VALUES (#{roleId},#{permissionId})
+	</insert>
+
+	<!-- 删除admin用户的 userInfo:del 权限 -->
+	<delete id="delPermission">
+		DELETE FROM sys_role_permission WHERE role_id = #{roleId} AND permission_id = #{permissionId}
+	</delete>
+
 </mapper> 

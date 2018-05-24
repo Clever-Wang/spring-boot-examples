@@ -47,4 +47,12 @@ public class ShiroSessionListener implements SessionListener{
         //会话过期,在线人数减一
         sessionCount.decrementAndGet();
     }
+
+    /**
+     * 获取在线人数使用
+     * @return
+     */
+    public AtomicInteger getSessionCount() {
+        return sessionCount;
+    }
 }

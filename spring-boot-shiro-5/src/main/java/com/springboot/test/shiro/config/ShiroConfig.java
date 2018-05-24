@@ -7,11 +7,11 @@ import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.RememberMeManager;
 import org.apache.shiro.session.SessionListener;
-import org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler;
 import org.apache.shiro.session.mgt.SessionManager;
-import org.apache.shiro.session.mgt.SessionValidationScheduler;
-import org.apache.shiro.session.mgt.ValidatingSessionManager;
-import org.apache.shiro.session.mgt.eis.*;
+import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
+import org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
+import org.apache.shiro.session.mgt.eis.SessionIdGenerator;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -99,21 +99,20 @@ public class ShiroConfig {
 
     /**
      * 配置核心安全事务管理器
-     * @param shiroRealm
      * @return
      */
     @Bean(name="securityManager")
-    public SecurityManager securityManager(@Qualifier("shiroRealm") ShiroRealm shiroRealm) {
+    public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager =  new DefaultWebSecurityManager();
         //设置自定义realm.
-        securityManager.setRealm(shiroRealm);
+        securityManager.setRealm(shiroRealm());
         //配置记住我 参考博客：
         securityManager.setRememberMeManager(rememberMeManager());
 
         //配置 ehcache缓存管理器 参考博客：
         securityManager.setCacheManager(ehCacheManager());
 
-        //配置自定义session管理，使用ehcache 参考博客：
+        //配置自定义session管理，使用redis 参考博客：
         securityManager.setSessionManager(sessionManager());
 
         return securityManager;
@@ -135,6 +134,15 @@ public class ShiroConfig {
     @Bean
     public ShiroRealm shiroRealm(){
         ShiroRealm shiroRealm = new ShiroRealm();
+        shiroRealm.setCachingEnabled(true);
+        //启用身份验证缓存，即缓存AuthenticationInfo信息，默认false
+        shiroRealm.setAuthenticationCachingEnabled(true);
+        //缓存AuthenticationInfo信息的缓存名称 在ehcache-shiro.xml中有对应缓存的配置
+        shiroRealm.setAuthenticationCacheName("authenticationCache");
+        //启用授权缓存，即缓存AuthorizationInfo信息，默认false
+        shiroRealm.setAuthorizationCachingEnabled(true);
+        //缓存AuthorizationInfo信息的缓存名称  在ehcache-shiro.xml中有对应缓存的配置
+        shiroRealm.setAuthorizationCacheName("authorizationCache");
         return shiroRealm;
     }
 
@@ -259,6 +267,19 @@ public class ShiroConfig {
     }
 
     /**
+     * 让某个实例的某个方法的返回值注入为Bean的实例
+     * Spring静态注入
+     * @return
+     */
+    @Bean
+    public MethodInvokingFactoryBean getMethodInvokingFactoryBean(){
+        MethodInvokingFactoryBean factoryBean = new MethodInvokingFactoryBean();
+        factoryBean.setStaticMethod("org.apache.shiro.SecurityUtils.setSecurityManager");
+        factoryBean.setArguments(new Object[]{securityManager()});
+        return factoryBean;
+    }
+
+    /**
      * 配置session监听
      * @return
      */
@@ -295,10 +316,10 @@ public class ShiroConfig {
         return enterpriseCacheSessionDAO;
     }
 
-
     /**
      * 配置保存sessionId的cookie
      * 注意：这里的cookie 不是上面的记住我 cookie 记住我需要一个cookie session管理 也需要自己的cookie
+     * 默认为: JSESSIONID 问题: 与SERVLET容器名冲突,重新定义为sid
      * @return
      */
     @Bean("sessionIdCookie")
@@ -317,7 +338,6 @@ public class ShiroConfig {
         return simpleCookie;
     }
 
-
     /**
      * 配置会话管理器，设定会话超时及保存
      * @return
@@ -332,9 +352,10 @@ public class ShiroConfig {
         sessionManager.setSessionListeners(listeners);
         sessionManager.setSessionIdCookie(sessionIdCookie());
         sessionManager.setSessionDAO(sessionDAO());
+        sessionManager.setCacheManager(ehCacheManager());
 
         //全局会话超时时间（单位毫秒），默认30分钟  暂时设置为10秒钟 用来测试
-        sessionManager.setGlobalSessionTimeout(10000);
+        sessionManager.setGlobalSessionTimeout(1800000);
         //是否开启删除无效的session对象  默认为true
         sessionManager.setDeleteInvalidSessions(true);
         //是否开启定时调度器进行检测过期session 默认为true
@@ -342,7 +363,7 @@ public class ShiroConfig {
         //设置session失效的扫描时间, 清理用户直接关闭浏览器造成的孤立会话 默认为 1个小时
         //设置该属性 就不需要设置 ExecutorServiceSessionValidationScheduler 底层也是默认自动调用ExecutorServiceSessionValidationScheduler
         //暂时设置为 5秒 用来测试
-        sessionManager.setSessionValidationInterval(5000);
+        sessionManager.setSessionValidationInterval(3600000);
 
         //取消url 后面的 JSESSIONID
         sessionManager.setSessionIdUrlRewritingEnabled(false);
@@ -350,29 +371,6 @@ public class ShiroConfig {
         return sessionManager;
 
     }
-
-
-//    /**
-//     * 会话验证调度器,每30分钟执行一次验证
-//     * 暂时写 10 秒 测试一下
-//     * @return
-//     */
-//    @Bean("sessionValidationScheduler")
-//    public ExecutorServiceSessionValidationScheduler executorServiceSessionValidationScheduler() {
-//        ExecutorServiceSessionValidationScheduler sessionValidationScheduler = new ExecutorServiceSessionValidationScheduler();
-//        //设置调度时间间隔，单位毫秒，默认就是1 小时  暂时写 10 秒测试 一下
-//        sessionValidationScheduler.setInterval(10000);
-//        sessionValidationScheduler.setSessionManager((ValidatingSessionManager)sessionManager());
-//        return sessionValidationScheduler;
-//    }
-
-//    @Bean
-//    public MethodInvokingFactoryBean getMethodInvokingFactoryBean(){
-//        MethodInvokingFactoryBean factoryBean = new MethodInvokingFactoryBean();
-//        factoryBean.setStaticMethod("org.apache.shiro.SecurityUtils.setSecurityManager");
-//        factoryBean.setArguments(new Object[]{securityManager()});
-//        return factoryBean;
-//    }
 
 
 }
