@@ -69,7 +69,7 @@ public class ShiroRealm extends AuthorizingRealm {
         //调用 CredentialsMatcher 校验 还需要创建一个类 继承CredentialsMatcher  如果在上面校验了,这个就不需要了
         //配置自定义权限登录器 参考博客：
 
-        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, password, getName());
+        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, user.getPassword(), getName());
         return info;
     }
 
