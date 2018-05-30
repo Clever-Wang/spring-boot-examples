@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.springboot.test.shiro.oauthserver.dao.ClientMapper">
+
+	<!-- 查询用户信息 -->
+	<select id="findByClientId" resultType="com.springboot.test.shiro.oauthserver.entity.Client">
+		select id, client_name, client_id, client_secret from oauth2_client where client_id = #{clientId}
+	</select>
+
+	<!-- 查询用户信息 -->
+	<select id="findByClientSecret" resultType="com.springboot.test.shiro.oauthserver.entity.Client">
+		select id, client_name, client_id, client_secret from oauth2_client where client_secret = #{clientSecret}
+	</select>
+
+	<!-- 添加用户 -->
+	<!-- 创建用户 -->
+	<!--<insert id="insert" parameterType="com.springboot.test.shiro.modules.user.dao.entity.User">-->
+		<!--<selectKey resultType="java.lang.Integer" keyProperty="uid" order="AFTER">-->
+			<!--SELECT-->
+			<!--LAST_INSERT_ID()-->
+		<!--</selectKey>-->
+		<!--insert into user_info-->
+		<!--<trim prefix="(" suffix=")" suffixOverrides="," >-->
+			<!--<if test="uid != null" >-->
+				<!--uid,-->
+			<!--</if>-->
+			<!--<if test="username != null and username != ''" >-->
+				<!--username,-->
+			<!--</if>-->
+			<!--<if test="password != null and password != ''" >-->
+				<!--password,-->
+			<!--</if>-->
+			<!--<if test="name != null and name != ''" >-->
+				<!--`name`,-->
+			<!--</if>-->
+			<!--<if test="id_card_num != null and id_card_num != ''" >-->
+				<!--id_card_num,-->
+			<!--</if>-->
+			<!--<if test="state != null and state != ''" >-->
+				<!--state,-->
+			<!--</if>-->
+		<!--</trim>-->
+		<!--<trim prefix="values (" suffix=")" suffixOverrides="," >-->
+			<!--<if test="uid != null" >-->
+				<!--#{uid},-->
+			<!--</if>-->
+			<!--<if test="username != null and username != ''" >-->
+				<!--#{username},-->
+			<!--</if>-->
+			<!--<if test="password != null and password != ''" >-->
+				<!--#{password},-->
+			<!--</if>-->
+			<!--<if test="name != null and name != ''" >-->
+				<!--#{name},-->
+			<!--</if>-->
+			<!--<if test="id_card_num != null and id_card_num != ''" >-->
+				<!--#{id_card_num},-->
+			<!--</if>-->
+			<!--<if test="state != null and state != ''" >-->
+				<!--#{state},-->
+			<!--</if>-->
+		<!--</trim>-->
+	<!--</insert>-->
+
+	<!--&lt;!&ndash; 删除用户 &ndash;&gt;-->
+	<!--<delete id="del">-->
+		<!--DELETE FROM user_info WHERE username = #{username}-->
+	<!--</delete>-->
+
+	<!--&lt;!&ndash; 修改用户信息 &ndash;&gt;-->
+	<!--<update id="update" parameterType="com.springboot.test.shiro.modules.user.dao.entity.User">-->
+		<!--update user_info-->
+		<!--<set >-->
+			<!--<if test="username != null and username != ''" >-->
+				<!--username = #{username},-->
+			<!--</if>-->
+			<!--<if test="password != null and password != ''" >-->
+				<!--password = #{password},-->
+			<!--</if>-->
+			<!--<if test="name != null and name != ''" >-->
+				<!--`name` = #{name},-->
+			<!--</if>-->
+			<!--<if test="id_card_num != null and id_card_num != ''" >-->
+				<!--id_card_num = #{id_card_num},-->
+			<!--</if>-->
+			<!--<if test="state != null and state != ''" >-->
+				<!--state = #{state},-->
+			<!--</if>-->
+		<!--</set>-->
+		<!--where uid = #{uid}-->
+	<!--</update>-->
+
+	
+</mapper> 
