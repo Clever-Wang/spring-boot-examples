@@ -307,9 +307,9 @@ public class ShiroConfig {
     @Bean
     public RedisManager redisManager(){
         RedisManager redisManager = new RedisManager();
-        redisManager.setHost("r-2zebca7d4628bac4.redis.rds.aliyuncs.com");
+        redisManager.setHost("127.0.0.1");
         redisManager.setPort(6379);
-        redisManager.setPassword("Qrbrqj88");
+        redisManager.setPassword("123456");
         return redisManager;
     }
 
